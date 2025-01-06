@@ -68,7 +68,7 @@ This project provides a solution for migrating product data from a Wix website t
    python absolute_urls.py
    ```
 
-### Step 3: Import Data to your custom solution
+### Step 3: Import Data to Your Custom Solution
 
 1. Once the `products_with_absolute_urls.csv` file is generated, use Odoo's import feature to upload the product data.
 
