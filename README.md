@@ -65,17 +65,17 @@ This project provides a solution for migrating product data from a Wix website t
 2. Ensure it correctly reads input from `stdin` and uses the Wix SDK to generate absolute URLs.
 3. Run the Python script that processes the CSV file and calls the Node.js script for URL conversion:
    ```bash
-   python process_media_urls.py
+   python absolute_urls.py
    ```
 
-### Step 3: Import Data to Odoo
+### Step 3: Import Data to your custom solution
 
 1. Once the `products_with_absolute_urls.csv` file is generated, use Odoo's import feature to upload the product data.
 
 ## How It Works
 
 1. **Data Fetching**: The Python script `fetch_wix_data.py` sends a GET request to the exposed Wix HTTP function and retrieves product data in JSON format.
-2. **Saving to CSV**: The data is saved in a CSV file with fields required by Odoo.
+2. **Saving to CSV**: The data is saved in a CSV file with fields required by your custom solution.
 3. **Media URL Conversion**: The Python script `process_media_urls.py` reads the CSV file, extracts media URLs, and calls the Node.js script `convertUrl.js` using `subprocess`. The Node.js script uses the Wix SDK to convert internal URLs to absolute URLs.
 
 ## Known Issues
