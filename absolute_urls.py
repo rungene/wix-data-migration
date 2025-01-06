@@ -18,7 +18,7 @@ def convert_media_url(wix_internal_url):
     try:
         # Call Node.js script
         result = subprocess.run(
-            ['node', "urlsConvert.js"],
+            ['node', "convertUrl.js"],
             input=wix_internal_url.encode('utf-8'),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
