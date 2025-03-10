@@ -21,13 +21,13 @@ def fetch_wix_data():
 
 # Save data to CSV
 def save_to_csv(data, file_name="products.csv"):
-    number = 0
+    #number = 0
     if not data:
         print("No data to save.")
         return
 
     # Define CSV column headers
-    headers = ["id", "name", "product options", "description",
+    headers = ["id", "name", "inStock", "product options", "description",
                "discounted price", "price", "collections", "brand",
                "media items", "currency", "discount", "created date"]
 
@@ -36,12 +36,13 @@ def save_to_csv(data, file_name="products.csv"):
         writer.writeheader()
 
         for item in data:
-            if number == 5:
-                break
+            #if number == 5:
+            #    break
             print(f"Item data: {item}")
             writer.writerow({
                 "id": item["_id"],
                 "name": item.get("name", ""),
+                "inStock": item.get("inStock", ""),
                 "product options": item.get("productOptions", ""),
                 "description": item.get("description", ""),
                 "discounted price": item.get("discountedPrice", 0),
@@ -53,7 +54,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "discount": item.get("discount", ""),
                 "created date": item.get("createdDate", ""),
             })
-            number += 1
+            #number += 1
 
     print(f"Data saved to {file_name}")
 
