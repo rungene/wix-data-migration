@@ -2,10 +2,12 @@ import requests
 import csv
 import os
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
 
 load_dotenv()
 # Define the API endpoint and authorization token
 API_URL = os.getenv('API_URL')
+
 
 # Fetch data from Wix
 def fetch_wix_data():
@@ -19,9 +21,17 @@ def fetch_wix_data():
         return []
 
 
+# Remove HTML tags from description
+def remove_html_tags(text):
+    if text is None:
+        return ""
+    soup = BeautifulSoup(text, 'html.parser')
+    return soup.get_text().strip()
+
+
 # Save data to CSV
 def save_to_csv(data, file_name="products.csv"):
-    #number = 0
+    # number = 0
     if not data:
         print("No data to save.")
         return
@@ -36,7 +46,7 @@ def save_to_csv(data, file_name="products.csv"):
         writer.writeheader()
 
         for item in data:
-            #if number == 5:
+            # if number == 5:
             #    break
             print(f"Item data: {item}")
             writer.writerow({
@@ -44,7 +54,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "name": item.get("name", ""),
                 "inStock": item.get("inStock", ""),
                 "product options": item.get("productOptions", ""),
-                "description": item.get("description", ""),
+                "description": remove_html_tags(item.get("description", "")),
                 "discounted price": item.get("discountedPrice", 0),
                 "price": item.get("price", 0),
                 "collections": item.get("collections", ""),
@@ -54,7 +64,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "discount": item.get("discount", ""),
                 "created date": item.get("createdDate", ""),
             })
-            #number += 1
+            # number += 1
 
     print(f"Data saved to {file_name}")
 
