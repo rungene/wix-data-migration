@@ -1,8 +1,16 @@
 import requests
 import csv
 import os
+import logging
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
+
+# Configure logging
+logging.basicConfig(
+    filename="fetch_wix_data.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 load_dotenv()
 # Define the API endpoint and authorization token
@@ -17,7 +25,7 @@ def fetch_wix_data():
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
+        logging.error(f"Error fetching data: {e}")
         return []
 
 
@@ -66,7 +74,7 @@ def save_to_csv(data, file_name="products.csv"):
             })
             # number += 1
 
-    print(f"Data saved to {file_name}")
+    logging.info(f"Data saved to {file_name}")
 
 
 # Main process
@@ -78,6 +86,6 @@ if __name__ == "__main__":
         # Extract items from dict contains 'items' key
         data = data['items']
     elif not isinstance(data, list):
-        print('Error: Expected a list of items, but got:', type(data))
+        logging.error('Error: Expected a list of items, but got:', type(data))
         exit(1)
     save_to_csv(data)
