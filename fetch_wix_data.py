@@ -23,7 +23,11 @@ def fetch_wix_data():
     try:
         response = requests.get(API_URL)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+
+        if not data:
+            logging.warning('Api returned an empty response.')
+        return data
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching data: {e}")
         return []
@@ -41,7 +45,7 @@ def remove_html_tags(text):
 def save_to_csv(data, file_name="products.csv"):
     # number = 0
     if not data:
-        print("No data to save.")
+        logging.error("No data to save.Exiting")
         return
 
     # Define CSV column headers
@@ -56,7 +60,6 @@ def save_to_csv(data, file_name="products.csv"):
         for item in data:
             # if number == 5:
             #    break
-            print(f"Item data: {item}")
             writer.writerow({
                 "id": item["_id"],
                 "name": item.get("name", ""),
@@ -72,6 +75,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "discount": item.get("discount", ""),
                 "created date": item.get("createdDate", ""),
             })
+            logging.info(f"Processed item ID: {item['_id']} to CSV")
             # number += 1
 
     logging.info(f"Data saved to {file_name}")
@@ -86,6 +90,7 @@ if __name__ == "__main__":
         # Extract items from dict contains 'items' key
         data = data['items']
     elif not isinstance(data, list):
-        logging.error('Error: Expected a list of items, but got:', type(data))
+        logging.error(f'Error: Expected a list of items, but got:
+                      {type(data)}')
         exit(1)
     save_to_csv(data)
