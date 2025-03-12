@@ -90,7 +90,7 @@ if __name__ == "__main__":
         # Extract items from dict contains 'items' key
         data = data['items']
     elif not isinstance(data, list):
-        logging.error(f'Error: Expected a list of items, but got:
-                      {type(data)}')
+        logging.error(f'Error: Expected a list of items, but got:'
+                      '{type(data)}')
         exit(1)
     save_to_csv(data)
