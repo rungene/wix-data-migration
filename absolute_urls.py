@@ -2,6 +2,7 @@ import csv
 import subprocess
 import json
 import ast
+import logging
 
 # Configure logging
 logging.basicConfig(
@@ -64,7 +65,6 @@ def process_media_items(media_items):
         # Extract and convert the src of each media item
         absolute_urls = [convert_media_url(item.get('src', ''))
                          for item in items]
-        logging.info('Successfully processed media items')
         return ','.join(absolute_urls)
     except (ValueError, SyntaxError) as e:
         logging.error(f'Error decoding media items JSON: {e}')
