@@ -57,6 +57,7 @@ def save_to_csv(data, file_name="products.csv"):
         writer = csv.DictWriter(file, fieldnames=headers)
         writer.writeheader()
 
+        row_count = 0
         for item in data:
             # if number == 5:
             #    break
@@ -75,10 +76,12 @@ def save_to_csv(data, file_name="products.csv"):
                 "discount": item.get("discount", ""),
                 "created date": item.get("createdDate", ""),
             })
-            logging.info(f"Processed item ID: {item['_id']} to CSV")
+            row_count += 1
+            if row_count % 100 == 0:
+                logging.info(f"Processed {row_count} rows...")
             # number += 1
 
-    logging.info(f"Data saved to {file_name}")
+    logging.info(f"Processed {row_count} rows. Data saved to {file_name}")
 
 
 # Main process
