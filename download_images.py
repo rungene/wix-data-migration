@@ -35,15 +35,15 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
                              "has an invalid format.")
         # Add new column
         fieldnames = reader.fieldnames + ['sanitized_name']
-
         # Loop through each row in the CSV
+        image_count = 0
         for row in reader:
             product_name = row["name"].replace(" ", "_").lower()
             product_name = sanitize_filename(product_name)
             # Add sanitised name to the row
             row['sanitized_name'] = (
-                product_name + '.webp' if not
-                product_name.endswith('.webp') else product_name)
+                product_name + '_1.webp' if not
+                product_name.endswith('_1.webp') else product_name)
             updated_rows.append(row)
 
             media_items = row.get("media items", "")
@@ -89,13 +89,17 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
                             # Save the image with compression
                             image.save(filepath, format="WEBP",
                                        quality=quality)
-                            logging.info(f"Downloaded and compressed: "
-                                         f"{filename}")
+                            image_count += 1
+                            if image_count % 100 == 0:
+                                logging.info(f"Downloaded and compressed: "
+                                             f"{image_count} images")
                         else:
                             logging.warning(f"Failed to download {url}: "
                                             f"HTTP {response.status_code}")
                 except Exception as e:
                     logging.error(f"Error processing image from {url}: {e}")
+    logging.info(f"Total images downloaded and compressed: "
+                 f"{image_count}")
 
     with open(csv_file, mode='w', encoding='utf-8', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
