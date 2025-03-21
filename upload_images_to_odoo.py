@@ -58,8 +58,10 @@ def upload_images_to_odoo(odoo_url, db_name, username, password,
 
                 # Find product by External ID
                 product_ids = models.execute_kw(
-                    db_name, uid, password, "product.template", "search",
-                    [[["external_id", "=", external_id]]]
+                    db_name, uid, password, "ir.model.data", "search_read",
+                    [[["model", "=", "product.template"],
+                      ["name", "=", external_id]]],
+                    {"fields": ["res_id"]}
                 )
             except Exception as e:
                 logging.error(f'Error {e}: while reading {image_path}')
@@ -70,7 +72,7 @@ def upload_images_to_odoo(odoo_url, db_name, username, password,
                                 f"ID: {external_id}")
                 continue
 
-            product_id = product_ids[0]
+            product_id = product_ids[0]['res_id']
 
             # Update product with image
             models.execute_kw(
@@ -80,9 +82,47 @@ def upload_images_to_odoo(odoo_url, db_name, username, password,
             counter += 1
             if counter % 100 == 0:
                 logging.info(f"Uploaded images {counter}")
+            if "extra_images" in row:
+                extra_images = row["extra_images"]
+                upload_extra_images(models, db_name, uid, password,
+                                    product_id, extra_images, image_folder)
 
-    logging.info(f"Image upload completed! {counter} images uploaded")
+    logging.info(f"Main Image upload complete! {counter} images uploaded")
 
+
+def upload_extra_images(models, db_name, uid, password, product_id,
+                        extra_images, image_folder):
+    """Uploads extra images to Odoo for a product."""
+    counter = 0
+    if extra_images:
+        for image_name in extra_images.split(";"):
+            image_path = os.path.join(image_folder, image_name.strip())
+
+            if not os.path.exists(image_path):
+                logging.warning(f"Extra image not found: {image_path}")
+                continue
+
+            try:
+                with open(image_path, "rb") as img_file:
+                    image_data = base64.b64encode(img_file.read()
+                                                  ).decode("utf-8")
+
+                models.execute_kw(
+                    db_name, uid, password, "product.image", "create",
+                    [{
+                        "product_tmpl_id": product_id,
+                        "image_1920": image_data,
+                        "name": image_name
+                    }]
+                )
+                counter += 1
+                if counter % 100 == 0:
+                    logging.info(f"Uploaded extra image progress:"
+                                 f"{counter} images uploaded")
+            
+            except Exception as e:
+                logging.error(f"Error uploading extra image {image_name}: {e}")
+    logging.info(f"Extra Images upload complete! {counter} images uploaded")
 
 if __name__ == "__main__":
     upload_images_to_odoo(
