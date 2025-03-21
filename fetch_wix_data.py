@@ -49,10 +49,11 @@ def save_to_csv(data, file_name="products.csv"):
         return
 
     # Define CSV column headers
-    headers = ["id", "name", "inStock", "product options", "description",
-               "discounted price", "price", "collections", "brand",
+    headers = ["External ID", "Name", "inStock", "product options",
+               "Sales Description", "Product Type",
+               "discounted price", "Sales Price", "collections", "brand",
                "media items", "currency", "discount", "created date",
-               "sanitized_name", "extra_images"]
+               "Image", "extra_images", "description_ecommerce"]
 
     with open(file_name, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=headers)
@@ -63,12 +64,15 @@ def save_to_csv(data, file_name="products.csv"):
             # if number == 5:
             #    break
             writer.writerow({
-                "id": item["_id"],
-                "name": item.get("name", ""),
+                "External ID": item["_id"],
+                "Name": item.get("name", ""),
                 "inStock": item.get("inStock", ""),
                 "product options": item.get("productOptions", ""),
-                "description": remove_html_tags(item.get("description", "")),
-                "discounted price": item.get("discountedPrice", 0),
+                "Sales Description": remove_html_tags(
+                                                      item.get("description",
+                                                               "")),
+                "Product Type": "Goods",
+                "Sales Price": item.get("discountedPrice", 0),
                 "price": item.get("price", 0),
                 "collections": item.get("collections", ""),
                 "brand": item.get("brand", ""),
@@ -76,8 +80,11 @@ def save_to_csv(data, file_name="products.csv"):
                 "currency": item.get("currency", ""),
                 "discount": item.get("discount", ""),
                 "created date": item.get("createdDate", ""),
-                "sanitized_name": "",
+                "Image": "",
                 "extra_images": "",
+                "description_ecommerce": remove_html_tags(
+                                                          item.get("description",
+                                                                   "")),
             })
             row_count += 1
             if row_count % 100 == 0:
