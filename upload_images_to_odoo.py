@@ -119,10 +119,11 @@ def upload_extra_images(models, db_name, uid, password, product_id,
                 if counter % 100 == 0:
                     logging.info(f"Uploaded extra image progress:"
                                  f"{counter} images uploaded")
-            
+
             except Exception as e:
                 logging.error(f"Error uploading extra image {image_name}: {e}")
     logging.info(f"Extra Images upload complete! {counter} images uploaded")
+
 
 if __name__ == "__main__":
     upload_images_to_odoo(
