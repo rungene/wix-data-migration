@@ -51,7 +51,8 @@ def save_to_csv(data, file_name="products.csv"):
     # Define CSV column headers
     headers = ["id", "name", "inStock", "product options", "description",
                "discounted price", "price", "collections", "brand",
-               "media items", "currency", "discount", "created date"]
+               "media items", "currency", "discount", "created date",
+               "sanitized_name", "extra_images"]
 
     with open(file_name, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=headers)
@@ -75,6 +76,8 @@ def save_to_csv(data, file_name="products.csv"):
                 "currency": item.get("currency", ""),
                 "discount": item.get("discount", ""),
                 "created date": item.get("createdDate", ""),
+                "sanitized_name": "",
+                "extra_images": "",
             })
             row_count += 1
             if row_count % 100 == 0:
