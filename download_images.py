@@ -41,7 +41,7 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
             product_name = row["name"].replace(" ", "_").lower()
             product_name = sanitize_filename(product_name)
             # Add sanitised name to the row
-            row['sanitized_name'] = (
+            row['Image'] = (
                 product_name + '_1.webp' if not
                 product_name.endswith('_1.webp') else product_name)
 
