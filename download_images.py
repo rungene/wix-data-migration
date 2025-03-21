@@ -33,8 +33,8 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
         if reader.fieldnames is None:
             raise ValueError("CSV file appears to be empty or"
                              "has an invalid format.")
-        # Add new column
-        fieldnames = reader.fieldnames + ['sanitized_name']
+        # Read fieldnames
+        fieldnames = reader.fieldnames
         # Loop through each row in the CSV
         image_count = 0
         for row in reader:
@@ -44,13 +44,12 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
             row['sanitized_name'] = (
                 product_name + '_1.webp' if not
                 product_name.endswith('_1.webp') else product_name)
-            updated_rows.append(row)
 
             media_items = row.get("media items", "")
 
             # Split the media items column into individual URLs
             media_urls = media_items.split(",") if media_items else []
-
+            extra_images = []
             for idx, url in enumerate(media_urls):
                 try:
                     url = url.strip()  # Remove any extra spaces
@@ -75,6 +74,8 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
                                             filename
                                 )
                                 counter += 1
+                            if idx > 0:
+                                extra_images.append(filename)
 
                             # Open the image using Pillow
                             image = Image.open(BytesIO(response.content))
@@ -98,6 +99,8 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
                                             f"HTTP {response.status_code}")
                 except Exception as e:
                     logging.error(f"Error processing image from {url}: {e}")
+            row['extra_images'] = ";".join(extra_images)
+            updated_rows.append(row)
     logging.info(f"Total images downloaded and compressed: "
                  f"{image_count}")
 
