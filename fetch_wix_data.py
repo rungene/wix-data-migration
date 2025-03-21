@@ -69,8 +69,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "inStock": item.get("inStock", ""),
                 "product options": item.get("productOptions", ""),
                 "Sales Description": remove_html_tags(
-                                                      item.get("description",
-                                                               "")),
+                    item.get("description", "")),
                 "Product Type": "Goods",
                 "Sales Price": item.get("discountedPrice", 0),
                 "price": item.get("price", 0),
@@ -83,8 +82,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "Image": "",
                 "extra_images": "",
                 "description_ecommerce": remove_html_tags(
-                                                          item.get("description",
-                                                                   "")),
+                    item.get("description", "")),
             })
             row_count += 1
             if row_count % 100 == 0:
