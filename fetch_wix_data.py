@@ -51,7 +51,7 @@ def save_to_csv(data, file_name="products.csv"):
     # Define CSV column headers
     headers = ["External ID", "Name", "inStock", "product options",
                "Sales Description", "Product Type",
-               "discounted price", "Sales Price", "collections", "brand",
+               "Sales Price", "price", "collections", "brand",
                "media items", "currency", "discount", "created date",
                "Image", "extra_images", "description_ecommerce"]
 
