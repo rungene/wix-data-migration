@@ -38,7 +38,7 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
         # Loop through each row in the CSV
         image_count = 0
         for row in reader:
-            product_name = row["name"].replace(" ", "_").lower()
+            product_name = row["Name"].replace(" ", "_").lower()
             product_name = sanitize_filename(product_name)
             # Add sanitised name to the row
             row['Image'] = (
