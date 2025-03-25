@@ -43,7 +43,7 @@ def remove_html_tags(text):
 
 # Save data to CSV
 def save_to_csv(data, file_name="products.csv"):
-    # number = 0
+    number = 0
     if not data:
         logging.error("No data to save.Exiting")
         return
@@ -53,7 +53,7 @@ def save_to_csv(data, file_name="products.csv"):
                "Sales Description", "Product Type",
                "Sales Price", "price", "collections", "brand",
                "media items", "currency", "discount", "created date",
-               "Image", "extra_images", "description_ecommerce"]
+               "Image", "extra_images", "description_ecommerce", "Size"]
 
     with open(file_name, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=headers)
@@ -61,8 +61,8 @@ def save_to_csv(data, file_name="products.csv"):
 
         row_count = 0
         for item in data:
-            # if number == 5:
-            #    break
+            if number == 50:
+                break
             writer.writerow({
                 "External ID": item["_id"],
                 "Name": item.get("name", ""),
@@ -83,11 +83,12 @@ def save_to_csv(data, file_name="products.csv"):
                 "extra_images": "",
                 "description_ecommerce": remove_html_tags(
                     item.get("description", "")),
+                "Size": "",
             })
             row_count += 1
             if row_count % 100 == 0:
                 logging.info(f"Processed {row_count} rows...")
-            # number += 1
+            number += 1
 
     logging.info(f"Processed {row_count} rows. Data saved to {file_name}")
 
