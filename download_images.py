@@ -1,6 +1,7 @@
 import os
-import requests
 import csv
+import ast
+import requests
 import logging
 from PIL import Image
 from io import BytesIO
@@ -100,6 +101,21 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
                 except Exception as e:
                     logging.error(f"Error processing image from {url}: {e}")
             row['extra_images'] = ";".join(extra_images)
+            product_options = row.get("product options", "{}").strip()
+
+            if product_options and product_options != "{}":
+                try:
+                    options = ast.literal_eval(product_options)
+                    size_choices = options.get("Size", {}).get("choices", [])
+                    sizes = [choice["value"] for choice in size_choices
+                             if "value" in choice]
+                    row['Size'] = ",".join(sizes) if sizes else ""
+                except (SyntaxError, ValueError):
+                    logging.error(f"Invalid format in 'product options': "
+                                  f"{product_options}")
+                    row['Size'] = ""
+            else:
+                row['Size'] = ""
             updated_rows.append(row)
     logging.info(f"Total images downloaded and compressed: "
                  f"{image_count}")
