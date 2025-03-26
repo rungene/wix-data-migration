@@ -86,6 +86,14 @@ def upload_images_to_odoo(odoo_url, db_name, username, password,
                 extra_images = row["extra_images"]
                 upload_extra_images(models, db_name, uid, password,
                                     product_id, extra_images, image_folder)
+            if "Size" in row and row['Size'].strip():
+                size_values = [size.strip() for size in row["Size"].split(',')
+                               if size.strip()]
+                update_product_sizes(models, db_name, uid, password,
+                                     product_id, size_values)
+            else:
+                logging.info(f"Skipping size update for product {product_id} "
+                             f"'Size' column is missing or empty.")
 
     logging.info(f"Main Image upload complete! {counter} images uploaded")
 
@@ -123,6 +131,68 @@ def upload_extra_images(models, db_name, uid, password, product_id,
             except Exception as e:
                 logging.error(f"Error uploading extra image {image_name}: {e}")
     logging.info(f"Extra Images upload complete! {counter} images uploaded")
+
+
+def update_product_sizes(models, db_name, uid, password, product_id,
+                         size_values):
+    """Updates product attributes in Odoo based on the sizes provided."""
+
+    if not size_values:
+        logging.info(f"No sizes to update for product {product_id}")
+        return
+
+    # Ensure the attribute "Size" exists in Odoo
+    size_attribute_id = models.execute_kw(
+        db_name, uid, password, "product.attribute", "search",
+        [[["name", "=", "Size"]]]
+    )
+
+    if not size_attribute_id:
+        size_attribute_id = models.execute_kw(
+            db_name, uid, password, "product.attribute", "create",
+            [{"name": "Size"}]
+        )
+    else:
+        size_attribute_id = size_attribute_id[0]  # Extract the ID
+
+    # Get existing size values in Odoo
+    existing_size_values = models.execute_kw(
+        db_name, uid, password, "product.attribute.value", "search_read",
+        [[["attribute_id", "=", size_attribute_id]]],
+        {"fields": ["id", "name"]}
+    )
+
+    existing_size_dict = {val["name"]: val["id"] for val in
+                          existing_size_values}
+
+    size_value_ids = []
+    for size in size_values:
+        size = size.strip()
+        if not size:
+            continue
+
+        if size in existing_size_dict:
+            size_value_ids.append(existing_size_dict[size])
+        else:
+            # Create new size value
+            new_size_id = models.execute_kw(
+                db_name, uid, password, "product.attribute.value", "create",
+                [{"name": size, "attribute_id": size_attribute_id}]
+            )
+            size_value_ids.append(new_size_id)
+            existing_size_dict[size] = new_size_id  # Update cache
+
+    # Link the sizes to the product
+    models.execute_kw(
+        db_name, uid, password, "product.template.attribute.line", "create",
+        [{
+            "product_tmpl_id": product_id,
+            "attribute_id": size_attribute_id,
+            "value_ids": [(6, 0, size_value_ids)]
+        }]
+    )
+
+    logging.info(f"Updated sizes for product {product_id}: {size_values}")
 
 
 if __name__ == "__main__":
