@@ -53,7 +53,8 @@ def save_to_csv(data, file_name="products.csv"):
                "Sales Description", "Product Type",
                "Sales Price", "price", "collections", "brand",
                "media items", "currency", "discount", "created date",
-               "Image", "extra_images", "description_ecommerce", "Size"]
+               "Image", "extra_images", "description_ecommerce", "Size",
+               "allow_out_of_stock_order"]
 
     with open(file_name, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=headers)
@@ -84,6 +85,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "description_ecommerce": remove_html_tags(
                     item.get("description", "")),
                 "Size": "",
+                "allow_out_of_stock_order": item.get("inStock", ""),
             })
             row_count += 1
             if row_count % 100 == 0:
