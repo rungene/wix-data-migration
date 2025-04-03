@@ -64,7 +64,7 @@ def save_to_csv(data, file_name="products.csv"):
         row_count = 0
         for item in data:
             # if number == 50:
-                # break
+            #    break
             writer.writerow({
                 "External ID": item["_id"],
                 "Name": item.get("name", ""),
