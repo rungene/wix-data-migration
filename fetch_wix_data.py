@@ -51,10 +51,11 @@ def save_to_csv(data, file_name="products.csv"):
     # Define CSV column headers
     headers = ["External ID", "Name", "inStock", "product options",
                "Sales Description", "Product Type",
-               "Sales Price", "price", "collections", "brand",
-               "media items", "currency", "discount", "created date",
+               "Sales Price", "brand", "description_ecommerce",
+               "media items", "created date",
                "Image", "extra_images", "description_ecommerce", "Size",
-               "allow_out_of_stock_order"]
+               "allow_out_of_stock_order", "is_published", "available_in_pos",
+               "Point of Sale Category"]
 
     with open(file_name, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=headers)
@@ -62,8 +63,8 @@ def save_to_csv(data, file_name="products.csv"):
 
         row_count = 0
         for item in data:
-           # if number == 50:
-           #     break
+            # if number == 50:
+                # break
             writer.writerow({
                 "External ID": item["_id"],
                 "Name": item.get("name", ""),
@@ -73,19 +74,18 @@ def save_to_csv(data, file_name="products.csv"):
                     item.get("description", "")),
                 "Product Type": "Goods",
                 "Sales Price": item.get("discountedPrice", 0),
-                "price": item.get("price", 0),
-                "collections": item.get("collections", ""),
                 "brand": item.get("brand", ""),
+                "description_ecommerce": remove_html_tags(
+                    item.get("description", "")),
                 "media items": item.get("mediaItems", ""),
-                "currency": item.get("currency", ""),
-                "discount": item.get("discount", ""),
                 "created date": item.get("createdDate", ""),
                 "Image": "",
                 "extra_images": "",
-                "description_ecommerce": remove_html_tags(
-                    item.get("description", "")),
                 "Size": "",
                 "allow_out_of_stock_order": item.get("inStock", ""),
+                "is_published": "true",
+                "available_in_pos": item.get("inStock", ""),
+                "Point of Sale Category": "All",
             })
             row_count += 1
             if row_count % 100 == 0:
