@@ -1,37 +1,41 @@
 // Expose your site's functionality externally
 // Follow instructions hear: https://dev.wix.com/docs/develop-websites/articles/coding-with-velo/integrations/exposing-services/write-an-http-function
 // to your Wix site Backend. Add the following in a file called 'http-functions.js'
-import { ok, notFound, serverError } from "wix-http-functions";
-import wixData from "wix-data";
+import { ok, badRequest, serverError } from "wix-http-functions";
+import wixData  from "wix-data";
 
 export async function get_storeListing(request) {
-    let options = {
-        "headers": {
+    const queryParams = request.query;
+    const page = parseInt(queryParams.page || "0");
+    const limit = parseInt(queryParams.limit || "50");
+
+    const options = {
+        headers: {
             "Content-Type": "application/json"
         }
     };
 
+    if (limit > 100 || limit < 1) {
+        options.body = { error: "Limit must be between 1 and 100." };
+        return badRequest(options);
+    }
+
     try {
-        let allItems = [];
-        let results = await wixData.query("Stores/Products").limit(100).find();
+        const results = await wixData.query("Stores/Products")
+            .skip(page * limit)
+            .limit(limit)
+            .find();
 
-        allItems = allItems.concat(results.items);
 
-        // Keep fetching next pages until all data is retrieved
-        while (results.hasNext()) {
-            results = await results.next();  // Await each next page
-            allItems = allItems.concat(results.items);
-        }
+        options.body = {
+            items: results.items,
+            hasNext: results.hasNext(),
+            currentPage: page
+        };
 
-        if (allItems.length > 0) {
-            options.body = { "items": allItems };
-            return ok(options);
-        }
-
-        return notFound(options);
-
+        return ok(options);
     } catch (error) {
-        options.body = { "error": error.message };
+        options.body = { error: error.message };
         return serverError(options);
     }
 }
