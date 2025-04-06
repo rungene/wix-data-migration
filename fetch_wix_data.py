@@ -15,22 +15,43 @@ logging.basicConfig(
 load_dotenv()
 # Define the API endpoint and authorization token
 API_URL = os.getenv('API_URL')
+PAGE_LIMIT = 100
 
 
 # Fetch data from Wix
 def fetch_wix_data():
     # headers = {"Authorization": f"Bearer {AUTH_TOKEN}"}
-    try:
-        response = requests.get(API_URL)
-        response.raise_for_status()
-        data = response.json()
+    all_items = []
+    page = 0
+    while True:
+        try:
+            paginated_url = f"{API_URL}?page={page}&limit={PAGE_LIMIT}"
+            response = requests.get(paginated_url)
+            response.raise_for_status()
 
-        if not data:
-            logging.warning('Api returned an empty response.')
-        return data
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching data: {e}")
-        return []
+            data = response.json()
+            if not data:
+                logging.warning('Api returned an empty response.')
+                break
+
+            if not isinstance(data, dict) or 'items' not in data:
+                logging.warning(f"Unexpected response format on"
+                                f"page {page}: {data}")
+                break
+
+            items = data.get("items", [])
+
+            all_items.extend(items)
+            logging.info(f"Fetched page {page}, items: {len(items)}")
+            if not data.get("hasNext", False):
+                break
+
+            page += 1
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error fetching data: {e}")
+            break
+    logging.info(f"Fetched {len(all_items)} items")
+    return {"items": all_items}
 
 
 # Remove HTML tags from description
