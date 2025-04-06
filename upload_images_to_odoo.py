@@ -201,6 +201,6 @@ if __name__ == "__main__":
         db_name=DB_NAME,
         username=USERNAME,
         password=PASSWORD,
-        csv_file="odoo_copy.csv",
+        csv_file="products_with_absolute_urls.csv",
         image_folder="compressed_images"
     )
