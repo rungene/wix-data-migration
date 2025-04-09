@@ -69,6 +69,8 @@ def import_products(csv_file):
                 "list_price": float(row.get("Sales Price", 0.0)),
                 "is_published": (row.get("is_published",
                                          "False").strip().lower() == "true"),
+                "is_storable": (row.get("is_storable",
+                                        "False").strip().lower() == "true"),
                 "description_ecommerce": row.get("Sales Description", ""),
                 "allow_out_of_stock_order": (
                     row.get("allow_out_of_stock_order",
