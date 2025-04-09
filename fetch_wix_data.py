@@ -73,7 +73,7 @@ def save_to_csv(data, file_name="products.csv"):
     headers = ["External ID", "Name", "inStock", "product options",
                "Sales Description", "Product Type",
                "Sales Price", "brand", "description_ecommerce",
-               "media items", "created date",
+               "media items", "created date", 'is_storable',
                "Image", "extra_images", "description_ecommerce", "Size",
                "allow_out_of_stock_order", "is_published", "available_in_pos",
                "Point of Sale Category"]
@@ -100,6 +100,7 @@ def save_to_csv(data, file_name="products.csv"):
                     item.get("description", "")),
                 "media items": item.get("mediaItems", ""),
                 "created date": item.get("createdDate", ""),
+                "is_storable": "True",
                 "Image": "",
                 "extra_images": "",
                 "Size": "",
