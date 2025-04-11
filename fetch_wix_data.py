@@ -71,7 +71,7 @@ def save_to_csv(data, file_name="products.csv"):
 
     # Define CSV column headers
     headers = ["External ID", "Name", "inStock", "product options",
-               "Sales Description", "Product Type",
+               "Sales Description", "Product Type", 'standard_price',
                "Sales Price", "brand", "description_ecommerce",
                "media items", "created date", 'is_storable',
                "Image", "extra_images", "description_ecommerce", "Size",
@@ -94,6 +94,7 @@ def save_to_csv(data, file_name="products.csv"):
                 "Sales Description": remove_html_tags(
                     item.get("description", "")),
                 "Product Type": "Goods",
+                "standard_price": 0.00,
                 "Sales Price": item.get("discountedPrice", 0),
                 "brand": item.get("brand", ""),
                 "description_ecommerce": remove_html_tags(
