@@ -15,7 +15,7 @@ logging.basicConfig(
 load_dotenv()
 # Define the API endpoint and authorization token
 API_URL = os.getenv('API_URL')
-PAGE_LIMIT = 100
+PAGE_LIMIT = 20
 
 
 # Fetch data from Wix
@@ -45,7 +45,6 @@ def fetch_wix_data():
             logging.info(f"Fetched page {page}, items: {len(items)}")
             if not data.get("hasNext", False):
                 break
-
             page += 1
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching data: {e}")
@@ -71,7 +70,7 @@ def save_to_csv(data, file_name="products.csv"):
 
     # Define CSV column headers
     headers = ["External ID", "Name", "inStock", "product options",
-               "Sales Description", "Product Type", 'standard_price',
+               "Sales Description", "Product Type",
                "Sales Price", "brand", "description_ecommerce",
                "media items", "created date", 'is_storable',
                "Image", "extra_images", "description_ecommerce", "Size",
@@ -94,7 +93,6 @@ def save_to_csv(data, file_name="products.csv"):
                 "Sales Description": remove_html_tags(
                     item.get("description", "")),
                 "Product Type": "Goods",
-                "standard_price": 0.00,
                 "Sales Price": item.get("discountedPrice", 0),
                 "brand": item.get("brand", ""),
                 "description_ecommerce": remove_html_tags(

@@ -64,7 +64,6 @@ def import_products(csv_file):
             product_data = {
                 "name": row["Name"],
                 "description_sale": row.get("Sales Description", ""),
-                "standard_price": row.get("standard_price", 0.00),
                 "type": product_type_map.get(row.get("Product Type",
                                              "").strip(), "consu"),
                 "list_price": float(row.get("Sales Price", 0.0)),
