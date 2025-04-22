@@ -37,7 +37,12 @@ def import_contacts(csv_file):
             phone = row.get("Phone 1", "").strip()
             mobile = row.get("Phone 2", "").strip()
             clean_phone = re.sub(r"[^\d+]", "", phone)
-            clean_mobile = re.sub(r"[^\d+]", "", mobile)
+            if clean_phone.count('+') >= 2:
+                parts = [f'+{p}' for p in clean_phone.split('+') if p]
+                clean_phone = parts[0] if len(parts) > 0 else False
+                clean_mobile = parts[1] if len(parts) > 1 else False
+            else:
+                clean_mobile = re.sub(r"[^\d+]", "", mobile)
             if not first_name and not last_name:
                 if email:
                     name = email.split('@')[0]
@@ -48,13 +53,15 @@ def import_contacts(csv_file):
                 name = f"{first_name} {last_name}".strip()
             contact_data = {
                 "name": name,
-                "phone": clean_phone if clean_phone else False,
-                "mobile": clean_mobile if clean_mobile else False,
                 "email": email if email else False,
                 "is_company": False
             }
-            if counter == 10:
-                break
+            if clean_phone:
+                contact_data['phone'] = clean_phone
+            if clean_mobile:
+                contact_data['mobile'] = clean_mobile
+            # if counter == 100:
+            #    break
 
             try:
                 existing = models.execute_kw(DB_NAME, uid, PASSWORD,
@@ -64,12 +71,12 @@ def import_contacts(csv_file):
                 if not existing:
                     models.execute_kw(DB_NAME, uid, PASSWORD,
                                       "res.partner", "create", [contact_data])
-                    if counter % 100 == 0:
+                    if counter % 100 == 0 and counter != 0:
                         logging.info(f"Imported: {counter} contacts")
                     counter += 1
                 else:
-                    continue
                     logging.info(f"Skipped duplicate: {email}")
+                    continue
             except Exception as e:
                 logging.error(f"Error importing {name}: {e}")
     logging.info(f'Imported {counter} successfully')
