@@ -60,23 +60,26 @@ def import_contacts(csv_file):
                 contact_data['phone'] = clean_phone
             if clean_mobile:
                 contact_data['mobile'] = clean_mobile
-            # if counter == 100:
-            #    break
+            if counter == 100:
+                break
 
             try:
-                existing = models.execute_kw(DB_NAME, uid, PASSWORD,
-                                             "res.partner", "search_read",
-                                             [[["email", "=", email]]],
-                                             {"fields": ["id"], "limit": 1})
-                if not existing:
+                skip = False
+                if email:
+                    existing = models.execute_kw(DB_NAME, uid, PASSWORD,
+                                                 "res.partner", "search_read",
+                                                 [[["email", "=", email]]],
+                                                 {"fields": ["id"],
+                                                  "limit": 1})
+                    if existing:
+                        logging.info(f"Skipped duplicate: {email}")
+                        skip = True
+                if not skip:
                     models.execute_kw(DB_NAME, uid, PASSWORD,
                                       "res.partner", "create", [contact_data])
                     if counter % 100 == 0 and counter != 0:
                         logging.info(f"Imported: {counter} contacts")
                     counter += 1
-                else:
-                    logging.info(f"Skipped duplicate: {email}")
-                    continue
             except Exception as e:
                 logging.error(f"Error importing {name}: {e}")
     logging.info(f'Imported {counter} successfully')
