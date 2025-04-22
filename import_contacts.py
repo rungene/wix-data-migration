@@ -60,8 +60,8 @@ def import_contacts(csv_file):
                 contact_data['phone'] = clean_phone
             if clean_mobile:
                 contact_data['mobile'] = clean_mobile
-            if counter == 100:
-                break
+            # if counter == 100:
+            #    break
 
             try:
                 skip = False
