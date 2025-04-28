@@ -106,7 +106,11 @@ def download_and_compress_images(csv_file, output_folder, max_width=800,
             if product_options and product_options != "{}":
                 try:
                     options = ast.literal_eval(product_options)
-                    size_choices = options.get("Size", {}).get("choices", [])
+                    normalized_options = {k.strip().lower(): v for k, v
+                                          in options.items()}
+                    size_choices = normalized_options.get(
+                                                          "size", {}).get(
+                                                          "choices", [])
                     sizes = [choice["value"] for choice in size_choices
                              if "value" in choice]
                     row['Size'] = ",".join(sizes) if sizes else ""
