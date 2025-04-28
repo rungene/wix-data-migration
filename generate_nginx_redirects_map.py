@@ -1,4 +1,5 @@
 import csv
+import os
 import logging
 from dotenv import load_dotenv
 
@@ -35,7 +36,7 @@ def generate_nginx_redirects_map(csv_file, output_file, domain):
 
         outfile.write('}\n')
 
-    logging.info(f"{Counter} redirects saved to {output_file}")
+    logging.info(f"{counter} redirects saved to {output_file}")
 
 
 if __name__ == "__main__":
