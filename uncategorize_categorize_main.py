@@ -41,13 +41,12 @@ def main_categories(in_file):
 
 # Match product name to category
 def match_category(product_name, category_keywords):
-    s = product_name.lower()
-    product_name = re.sub(r'[^\w\s]', '', s)
-    name_tokens = set(product_name.lower().split())
+    s = re.sub(r'[^\w\s]', '', product_name.lower())
+    name_tokens = set(s.split())
     for main_cat, keywords in category_keywords.items():
         for keyword in keywords:
-            key = re.sub(r'[^\w\s]', '', keyword)
-            keyword_tokens = set(key.lower().split())
+            key = re.sub(r'[^\w\s]', '', keyword.lower())
+            keyword_tokens = set(key.split())
             if keyword_tokens.issubset(name_tokens):
                 return main_cat
     return "Uncategorized"
